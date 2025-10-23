@@ -10,7 +10,6 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
   },
-
   "keywords": [],
   "author": "YOUR_NAME <yourmail@mail.com>",
   "license": "ISC",
@@ -32,6 +31,7 @@
   },
   "dependencies": {
     "idb": "^8.0.3",
-    "leaflet": "^1.9.4"
+    "leaflet": "^1.9.4",
+    "sweetalert2": "^11.26.3"
   }
 }

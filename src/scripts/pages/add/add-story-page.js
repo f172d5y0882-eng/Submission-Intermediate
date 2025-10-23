@@ -1,3 +1,5 @@
+import Swal from 'sweetalert2';
+
 class AddStoryPage {
   async render() {
     const token = localStorage.getItem('authToken');
@@ -27,11 +29,15 @@ class AddStoryPage {
 
             <p>Atau ambil dari kamera:</p>
             <button type="button" id="open-camera">Buka Kamera</button>
+            <button type="button" id="stop-camera" style="display:none; margin-left:10px;">Tutup Kamera</button>
             <button type="button" id="reset-media" class="hidden" style="margin-left: 10px;">Reset Gambar</button>
 
             <video id="video" width="300" autoplay style="display:none; margin-block:10px;"></video>
             <button type="button" id="capture" style="display:none;">Ambil Foto</button>
             <canvas id="canvas" style="display:none;"></canvas>
+
+            <!-- preview hasil kamera -->
+            <div id="camera-preview-container" style="margin-top:10px;"></div>
           </div>
 
           <div>
@@ -71,9 +77,14 @@ class AddStoryPage {
     let stream = null;
     let photoBlob = null;
     const openCameraButton = document.querySelector('#open-camera');
+    const stopCameraButton = document.querySelector('#stop-camera');
     const captureButton = document.querySelector('#capture');
+    const resetButton = document.querySelector('#reset-media');
+    const inputFile = document.querySelector('#photo');
     const video = document.querySelector('#video');
     const canvas = document.querySelector('#canvas');
+    const previewContainer = document.querySelector('#camera-preview-container');
+    const form = document.querySelector('#story-form');
 
     openCameraButton.addEventListener('click', async () => {
       try {
@@ -81,10 +92,22 @@ class AddStoryPage {
         video.srcObject = stream;
         video.style.display = 'block';
         captureButton.style.display = 'inline-block';
+        stopCameraButton.style.display = 'inline-block';
       } catch (err) {
-        alert('Gagal mengakses kamera');
+        Swal.fire('Oops!', 'Gagal mengakses kamera', 'error');
         console.error(err);
       }
+    });
+
+    stopCameraButton.addEventListener('click', () => {
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+      }
+      video.srcObject = null;
+      video.style.display = 'none';
+      captureButton.style.display = 'none';
+      stopCameraButton.style.display = 'none';
+      Swal.fire('Info', 'Kamera dimatikan', 'info');
     });
 
     captureButton.addEventListener('click', () => {
@@ -102,15 +125,26 @@ class AddStoryPage {
         video.srcObject = null;
         video.style.display = 'none';
         captureButton.style.display = 'none';
+        stopCameraButton.style.display = 'none';
 
-        alert('Foto berhasil diambil!');
+        Swal.fire('Sukses!', 'Foto berhasil diambil', 'success');
+
+        // === tampilkan preview hasil kamera ===
+        previewContainer.innerHTML = '';
+        const preview = document.createElement('img');
+        preview.src = URL.createObjectURL(photoBlob);
+        preview.alt = 'Foto dari kamera';
+        preview.style.maxWidth = '150px';
+        preview.style.marginTop = '10px';
+        previewContainer.appendChild(preview);
+
+        // tampilkan tombol reset
+        resetButton.classList.remove('hidden');
+        openCameraButton.classList.add('hidden');
       }, 'image/jpeg');
     });
 
-    const inputFile = document.querySelector('#photo');
-    const resetButton = document.querySelector('#reset-media');
-
-    // Jika user memilih file dari galeri → sembunyikan kamera
+    // Jika user pilih file manual
     inputFile.addEventListener('change', () => {
       if (inputFile.files.length > 0) {
         if (stream) {
@@ -121,11 +155,13 @@ class AddStoryPage {
         captureButton.style.display = 'none';
         openCameraButton.classList.add('hidden');
         resetButton.classList.remove('hidden');
+
+        // hapus preview kamera
+        previewContainer.innerHTML = '';
       }
     });
 
     // === FORM SUBMIT ===
-    const form = document.querySelector('#story-form');
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -147,8 +183,17 @@ class AddStoryPage {
         }
       }
 
+      Swal.fire({
+        title: 'Mengirim cerita...',
+        text: 'Mohon tunggu sebentar',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
       try {
-        const token = localStorage.getItem('authToken'); // ⬅️ ambil token user login
+        const token = localStorage.getItem('authToken');
         const response = await fetch('https://story-api.dicoding.dev/v1/stories', {
           method: 'POST',
           headers: {
@@ -158,14 +203,17 @@ class AddStoryPage {
         });
 
         const result = await response.json();
-        alert(result.message);
 
         if (!result.error) {
-          location.hash = '#/';
+          Swal.fire('Sukses!', result.message, 'success').then(() => {
+            location.hash = '#/';
+          });
+        } else {
+          Swal.fire('Oops!', result.message, 'error');
         }
       } catch (error) {
         console.error(error);
-        alert('Gagal mengirim data');
+        Swal.fire('Oops!', 'Gagal mengirim data', 'error');
       }
     });
 
@@ -182,10 +230,14 @@ class AddStoryPage {
       video.srcObject = null;
       video.style.display = 'none';
       captureButton.style.display = 'none';
+      stopCameraButton.style.display = 'none';
       openCameraButton.classList.remove('hidden');
 
       photoBlob = null;
       resetButton.classList.add('hidden');
+
+      // hapus preview kamera
+      previewContainer.innerHTML = '';
     });
   }
 }
