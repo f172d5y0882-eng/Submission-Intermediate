@@ -7,9 +7,11 @@ module.exports = {
     app: path.resolve(__dirname, 'src/scripts/index.js'),
   },
   output: {
-    filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'dist'),
+  filename: '[name].bundle.js',
+  path: path.resolve(__dirname, 'dist'),
+  publicPath: '/Submission-Intermediate/',
   },
+
   module: {
     rules: [
       {
@@ -34,16 +36,7 @@ new CopyWebpackPlugin({
       from: path.resolve(__dirname, 'src/manifest.json'),
       to: path.resolve(__dirname, 'dist/manifest.json'),
     },
-    // Copy icons
-    {
-      from: path.resolve(__dirname, 'src/public/icons'),
-      to: path.resolve(__dirname, 'dist/icons'),
-    },
-    // Copy images
-    {
-      from: path.resolve(__dirname, 'src/public/images'),
-      to: path.resolve(__dirname, 'dist/images'),
-    },
+   
   ],
 }),
 
