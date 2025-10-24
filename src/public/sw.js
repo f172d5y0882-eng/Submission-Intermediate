@@ -1,22 +1,26 @@
+// ==============================
+// PUSH NOTIFICATION HANDLER
+// ==============================
 self.addEventListener('push', (event) => {
   let data = {};
 
   if (event.data) {
     try {
-      data = event.data.json(); // parsing JSON dari server
+      data = event.data.json(); // Parsing JSON dari server
     } catch (e) {
       console.error('❌ Gagal parse push data:', e);
     }
   }
 
-  // Ambil title & options sesuai schema JSON Dicoding
+  // API Dicoding mengirim dengan schema: { title, options: { body } }
   const title = data.title || 'Notifikasi Baru';
-  const options = data.options || {
-    body: 'Ada pesan baru dari Dicoding!',
+  const options = {
+    body: data.options?.body || 'Ada pesan baru dari Dicoding!',
     icon: './icons/icon-192x192.png',
+    badge: './icons/icon-192x192.png',
     data: {
-      url: './'
-    }
+      url: data.options?.url || './',
+    },
   };
 
   event.waitUntil(
@@ -24,14 +28,17 @@ self.addEventListener('push', (event) => {
   );
 });
 
+// Klik notifikasi buka halaman
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-
   event.waitUntil(
     clients.openWindow(event.notification.data?.url || './')
   );
 });
 
+// ==============================
+// CACHE STRATEGY
+// ==============================
 const CACHE_NAME = 'cerita-app-v1';
 const urlsToCache = [
   './',
@@ -41,10 +48,10 @@ const urlsToCache = [
   './icons/icon-512x512.png',
   './manifest.json',
   './app.css',
-  './app.bundle.js'
+  './app.bundle.js',
 ];
 
-// Install service worker
+// Install service worker & cache aset
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -70,7 +77,7 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch offline fallback
+// Fetch dengan fallback offline
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request)

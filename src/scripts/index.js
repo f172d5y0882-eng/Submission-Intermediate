@@ -2,7 +2,7 @@ import '../styles/styles.css';
 import App from './pages/app';
 import Header from './components/header';
 
-const vapidPublicKey = 'BMK6wYvdWg2EtZ-VoKOyM54TbMQUncw8csZ7ZAr8g0aS9_qJqt2lh7ydazrErvS-RLKybzyE3ToHzT_KND5QkL4';
+const vapidPublicKey = 'BCCs2eonMI-6H2ctvFaWg-UYdDv387Vno_bzUzALpB442r2lCnsHmtrx8biyPi_E-1fSGABK_Qs_GlvPoJJqxbk';
 
 // Helper untuk convert VAPID key
 function urlBase64ToUint8Array(base64String) {
@@ -15,10 +15,10 @@ function urlBase64ToUint8Array(base64String) {
 async function initPushNotification() {
   if ('serviceWorker' in navigator && 'PushManager' in window) {
     try {
-      // ✅ Daftarkan SW
+      // ✅ Daftarkan Service Worker
       await navigator.serviceWorker.register('sw.js');
 
-      // ✅ Tunggu sampai SW aktif
+      // ✅ Tunggu sampai SW siap
       const registration = await navigator.serviceWorker.ready;
       console.log('✅ Service Worker siap digunakan');
 
@@ -37,22 +37,23 @@ async function initPushNotification() {
 
       const pushSubscription = await registration.pushManager.subscribe(subscribeOptions);
 
-      // Hapus expirationTime karena Dicoding API tidak izinkan field ini
+      // ✅ Sesuai dokumentasi Dicoding, hapus expirationTime
       const raw = pushSubscription.toJSON();
       const cleanSubscription = {
         endpoint: raw.endpoint,
-        keys: raw.keys,
+        keys: {
+          p256dh: raw.keys.p256dh,
+          auth: raw.keys.auth,
+        },
       };
 
       console.log('✅ Berhasil subscribe push', cleanSubscription);
 
-      // ✅ Cek apakah localhost atau production
+      // ✅ Kirim ke API Dicoding hanya di production
       const isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-
       if (!isLocalhost) {
         try {
-          const token = localStorage.getItem('authToken'); // ambil token dari login
-
+          const token = localStorage.getItem('authToken');
           const response = await fetch('https://story-api.dicoding.dev/v1/notifications/subscribe', {
             method: 'POST',
             headers: {
