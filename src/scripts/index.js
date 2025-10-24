@@ -36,21 +36,30 @@ async function initPushNotification() {
       };
 
       const pushSubscription = await registration.pushManager.subscribe(subscribeOptions);
-      console.log('✅ Berhasil subscribe push', JSON.stringify(pushSubscription));
+
+      // Hapus expirationTime karena Dicoding API tidak izinkan field ini
+      const raw = pushSubscription.toJSON();
+      const cleanSubscription = {
+        endpoint: raw.endpoint,
+        keys: raw.keys,
+      };
+
+      console.log('✅ Berhasil subscribe push', cleanSubscription);
 
       // ✅ Cek apakah localhost atau production
       const isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
 
       if (!isLocalhost) {
         try {
+          const token = localStorage.getItem('authToken'); // ambil token dari login
+
           const response = await fetch('https://story-api.dicoding.dev/v1/notifications/subscribe', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLUx3RU1aMlpLLUkxZFFsSmsiLCJpYXQiOjE3NjExMTE0NDZ9.kdg66WNolhQIZGewDP2n2wMG8w0CkVTr8TCkjyEhLYU',
-
+              Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify(pushSubscription),
+            body: JSON.stringify(cleanSubscription),
           });
 
           const result = await response.json();
