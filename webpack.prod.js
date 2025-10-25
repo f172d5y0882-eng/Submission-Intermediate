@@ -1,37 +1,26 @@
-const path = require('path');
-const common = require('./webpack.common.js');
+// webpack.prod.js
 const { merge } = require('webpack-merge');
+const common = require('./webpack.common.js');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = merge(common, {
   mode: 'production',
   output: {
-    filename: 'app.bundle.js',
-    path: path.resolve(__dirname, 'dist'),
-    publicPath: '/Submission-Intermediate/', // ✅ wajib untuk GitHub Pages
+    publicPath: '/Submission-Intermediate/',   // ✅ DEPLOY ke GitHub Pages
   },
   module: {
     rules: [
-      {
-        test: /\.css$/,
-        use: [
-          MiniCssExtractPlugin.loader,
-          'css-loader',
-        ],
-      },
+      { test: /\.css$/, use: [MiniCssExtractPlugin.loader, 'css-loader'] },
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-          options: { presets: ['@babel/preset-env'] },
-        },
+        use: [{ loader: 'babel-loader', options: { presets: ['@babel/preset-env'] } }],
       },
     ],
   },
   plugins: [
     new CleanWebpackPlugin(),
-    new MiniCssExtractPlugin(),
+    new MiniCssExtractPlugin({ filename: 'main.css' }), // ✅ nama file CSS di prod
   ],
 });

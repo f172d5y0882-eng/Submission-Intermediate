@@ -36,11 +36,11 @@ async function initPushNotification() {
       };
 
       // Hapus subscription lama jika ada
-    const existingSubscription = await registration.pushManager.getSubscription();
-    if (existingSubscription) {
-      await existingSubscription.unsubscribe();
-      console.log('🔄 Subscription lama dihapus');
-    }
+      const existingSubscription = await registration.pushManager.getSubscription();
+      if (existingSubscription) {
+        await existingSubscription.unsubscribe();
+        console.log('🔄 Subscription lama dihapus');
+      }
 
       const pushSubscription = await registration.pushManager.subscribe(subscribeOptions);
 
@@ -91,6 +91,15 @@ async function initPushNotification() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // ✅ CLEAR SERVICE WORKER & CACHE SAAT LOCAL DEV
+  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+    navigator.serviceWorker.getRegistrations?.().then((regs) => {
+      regs.forEach((r) => r.unregister());
+    });
+    caches?.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k))));
+    console.log('🧹 Localhost: SW & cache dibersihkan');
+  }
+
   // 🔹 Render Header lebih dulu
   const headerContainer = document.querySelector('header');
   const header = new Header();

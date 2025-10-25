@@ -1,31 +1,19 @@
-const path = require('path');
-const common = require('./webpack.common.js');
+// webpack.dev.js
 const { merge } = require('webpack-merge');
+const common = require('./webpack.common.js');
 
 module.exports = merge(common, {
   mode: 'development',
-  output: {
-    publicPath: '/', // ✅ pastikan untuk local testing tetap '/'
-  },
   module: {
     rules: [
-      {
-        test: /\.css$/,
-        use: [
-          'style-loader',
-          'css-loader',
-        ],
-      },
+      { test: /\.css$/, use: ['style-loader', 'css-loader'] }, // inject style
     ],
   },
   devServer: {
-    static: path.resolve(__dirname, 'dist'),
     port: 9004,
-    client: {
-      overlay: {
-        errors: true,
-        warnings: true,
-      },
-    },
+    historyApiFallback: true,
+    static: false,                    // ✅ JANGAN layani file dari /dist saat dev
+    devMiddleware: { writeToDisk: false },
+    client: { overlay: { errors: true, warnings: true } },
   },
 });

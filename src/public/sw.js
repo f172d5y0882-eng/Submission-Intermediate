@@ -47,7 +47,7 @@ const urlsToCache = [
   './icons/icon-192x192.png',
   './icons/icon-512x512.png',
   './manifest.json',
-  './app.css',
+  './main.css',
   './app.bundle.js',
 ];
 
