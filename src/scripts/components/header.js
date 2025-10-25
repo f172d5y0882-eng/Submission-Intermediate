@@ -13,9 +13,14 @@ class Header {
             <li><a href="#/add">Tambah Cerita</a></li>
             ${
               isLoggedIn
-                ? `<li><a href="#/favorite">Favorite</a></li>
-                   <li><a href="#" id="logout-link">Logout</a></li>`
-                : '<li><a href="#/login">Login</a></li>'
+                ? `
+                  <li><a href="#/favorite">Favorite</a></li>
+                  <li><a href="#" id="logout-link">Logout</a></li>
+                `
+                : `
+                  <li><a href="#/login">Login</a></li>
+                  <li><a href="#/register">Register</a></li>
+                `
             }
           </ul>
         </nav>

@@ -4,6 +4,9 @@ const { merge } = require('webpack-merge');
 
 module.exports = merge(common, {
   mode: 'development',
+  output: {
+    publicPath: '/', // ✅ pastikan untuk local testing tetap '/'
+  },
   module: {
     rules: [
       {

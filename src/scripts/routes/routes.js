@@ -3,12 +3,15 @@ import AboutPage from '../pages/about/about-page';
 import AddStoryPage from '../pages/add/add-story-page'; 
 import LoginPage from '../pages/login/login-page';
 import FavoritePage from '../pages/favorite/favorite-page';
+import RegisterPage from '../pages/register/register-page';
+
 
 const routes = {
   '/': new HomePage(),
   '/about': new AboutPage(),
   '/add': new AddStoryPage(), 
   '/login': new LoginPage(),
+  '/register': RegisterPage,
   '/favorite': new FavoritePage(),
 };
 

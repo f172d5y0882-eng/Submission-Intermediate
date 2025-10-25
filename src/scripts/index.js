@@ -35,6 +35,13 @@ async function initPushNotification() {
         applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
       };
 
+      // Hapus subscription lama jika ada
+    const existingSubscription = await registration.pushManager.getSubscription();
+    if (existingSubscription) {
+      await existingSubscription.unsubscribe();
+      console.log('🔄 Subscription lama dihapus');
+    }
+
       const pushSubscription = await registration.pushManager.subscribe(subscribeOptions);
 
       // ✅ Sesuai dokumentasi Dicoding, hapus expirationTime

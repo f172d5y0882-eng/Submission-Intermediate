@@ -3,43 +3,41 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-  entry: {
-    app: path.resolve(__dirname, 'src/scripts/index.js'),
-  },
+  entry: './src/scripts/index.js',
   output: {
-  filename: '[name].bundle.js',
-  path: path.resolve(__dirname, 'dist'),
-  publicPath: '/Submission-Intermediate/',
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'app.bundle.js',
+    publicPath: '/', // ✅ default untuk local (akan di-overwrite di prod)
   },
-
   module: {
     rules: [
       {
-        test: /\.(png|jpe?g|gif)$/i,
+        test: /\.html$/,
+        use: ['html-loader'],
+      },
+      {
+        test: /\.(png|jpe?g|gif|svg)$/i,
         type: 'asset/resource',
+        generator: {
+          filename: 'images/[name][ext]',
+        },
       },
     ],
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, 'src/index.html'),
+      template: './src/public/index.html',
+      filename: 'index.html',
     }),
-new CopyWebpackPlugin({
-  patterns: [
-    // Copy semua file di public
-    {
-      from: path.resolve(__dirname, 'src/public/'),
-      to: path.resolve(__dirname, 'dist/'),
-    },
-    // Copy manifest.json langsung ke root dist
-    {
-      from: path.resolve(__dirname, 'src/manifest.json'),
-      to: path.resolve(__dirname, 'dist/manifest.json'),
-    },
-   
-  ],
-}),
-
-
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: 'src/public/icons', to: 'icons' },
+        { from: 'src/public/images', to: 'images' },
+        { from: 'src/public/manifest.json', to: 'manifest.json' },
+        { from: 'src/public/sw.js', to: 'sw.js' },
+        { from: 'src/public/fallback.html', to: 'fallback.html' },
+        { from: 'src/public/favicon.png', to: 'favicon.png' },
+      ],
+    }),
   ],
 };
