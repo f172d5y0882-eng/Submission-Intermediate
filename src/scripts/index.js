@@ -1,6 +1,7 @@
 // src/scripts/index.js
 import '../styles/styles.css';
-import { login, register, getAuthToken, logout } from './auth';
+import { login, register, logout, getAuthToken } from "./auth.js";
+
 
 document.addEventListener('DOMContentLoaded', () => {
   const mainContent = document.getElementById('main-content');
