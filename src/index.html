@@ -1,57 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Web App Manifest -->
-  <link rel="manifest" href="manifest.json" />
+  <!-- Manifest & Icons -->
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+
 
   <meta name="theme-color" content="#03a9f4" />
-
-  <!-- Ikon aplikasi -->
-  <link rel="icon" href="favicon.png" />
-  <link rel="apple-touch-icon" href="icons/icon-192x192.png" />
+  <link rel="icon" href="%PUBLIC_URL%/favicon.png" />
+  <link rel="apple-touch-icon" href="%PUBLIC_URL%/icons/icon-192x192.png" />
+<link rel="apple-touch-icon" sizes="512x512" href="%PUBLIC_URL%/icons/icon-512x512.png" />
 
   <!-- Leaflet CSS -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
-
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <title>App</title>
 </head>
+<body>
+  <header>
+    <div class="main-header container">
+      <a class="brand-name" href="#/">App</a>
+      <nav id="navigation-drawer" class="navigation-drawer">
+        <ul id="nav-list" class="nav-list">
+          <li><a href="#/">Beranda</a></li>
+          <li><a href="#/about">About</a></li>
+          <li><a href="#/add">Tambah Cerita</a></li>
+          <li><a href="#/favorite">Favorite</a></li>
+        </ul>
+      </nav>
+      <button id="drawer-button" class="drawer-button">☰</button>
+    </div>
+  </header>
 
-  <body>
-    <header>
-      <div class="main-header container">
-        <a class="brand-name" href="#/">App</a>
+  <main id="main-content" class="main-content"></main>
 
-        <nav id="navigation-drawer" class="navigation-drawer">
-          <ul id="nav-list" class="nav-list">
-            <li><a href="#/">Beranda</a></li>
-            <li><a href="#/about">About</a></li>
-            <li><a href="#/add">Tambah Cerita</a></li>
-            <li><a href="#/favorite">Favorite</a></li>
-          </ul>
-        </nav>
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2025 James William Saragih</p>
+      <p>Versi 1.0.0 | <a href="mailto:emailkamu@gmail.com">Kontak</a></p>
+    </div>
+  </footer>
 
-        <button id="drawer-button" class="drawer-button">☰</button>
-      </div>
-    </header>
-
-
-    <main id="main-content" class="main-content"></main>
-
-    <footer class="footer">
-      <div class="container">
-        <p>&copy; 2025 James William Saragih</p>
-        <p>Versi 1.0.0 | <a href="mailto:emailkamu@gmail.com">Kontak</a></p>
-      </div>
-    </footer>
-
-  </body>
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</body>
 </html>
