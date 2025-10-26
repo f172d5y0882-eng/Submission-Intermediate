@@ -1,46 +1,50 @@
-const API_BASE = 'https://story-api.dicoding.dev/v1';
+// src/scripts/auth.js
+const API_URL = "https://story-api.dicoding.dev/v1";
 
-export async function register(username, password) {
-  const response = await fetch(`${API_BASE}/register`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ name: username, email: `${username}@mail.com`, password }),
-  });
-
-  if (!response.ok) {
-    throw new Error('Gagal register');
-  }
-
-  return response.json();
+// simpan token ke localStorage
+export function saveAuthToken(token) {
+  localStorage.setItem("authToken", token);
 }
 
-export async function login(email, password) {
-  const response = await fetch(`${API_BASE}/login`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ email, password }),
+// ambil token dari localStorage
+export function getAuthToken() {
+  return localStorage.getItem("authToken");
+}
+
+// hapus token saat logout
+export function logout() {
+  localStorage.removeItem("authToken");
+}
+
+// register user baru
+export async function register(name, email, password) {
+  const res = await fetch(`${API_URL}/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, email, password }),
   });
 
-  if (!response.ok) {
-    throw new Error('Login gagal');
+  const data = await res.json();
+  if (!res.ok || data.error) {
+    throw new Error(data.message || "Registrasi gagal");
   }
-
-  const data = await response.json();
-  if (data.loginResult && data.loginResult.token) {
-    localStorage.setItem('authToken', data.loginResult.token);
-  }
-
   return data;
 }
 
-export function getAuthToken() {
-  return localStorage.getItem('authToken');
-}
+// login user
+export async function login(email, password) {
+  const res = await fetch(`${API_URL}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
 
-export function logout() {
-  localStorage.removeItem('authToken');
+  const data = await res.json();
+  if (!res.ok || data.error) {
+    throw new Error(data.message || "Login gagal");
+  }
+
+  // simpan token
+  saveAuthToken(data.loginResult.token);
+  return data;
 }
